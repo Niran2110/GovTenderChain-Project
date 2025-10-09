@@ -1,32 +1,46 @@
-import React from 'react';
-// Import useNavigate instead of useHistory
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockTenders } from '../../data/mockData';
+import { useAuth } from '../../hooks/useAuth';
+import api from '../../api';
 
 const ViewBids = () => {
     const { id } = useParams();
-    // Initialize useNavigate
     const navigate = useNavigate();
-    const tender = mockTenders.find(t => t.id === id);
+    const { token } = useAuth();
+    const [tender, setTender] = useState(null);
 
-    const handleAwardTender = (contractorName) => {
-        if (window.confirm(`Are you sure you want to award this tender to ${contractorName}? This action cannot be undone.`)) {
-            
-            const winningBid = tender.bids.find(b => b.contractorName === contractorName);
-            if (winningBid) {
-                winningBid.awarded = true;
+    useEffect(() => {
+        const fetchTender = async () => {
+            try {
+                const { data } = await api.get(`/tenders/${id}`);
+                setTender(data);
+            } catch (error) {
+                console.error("Could not fetch tender for bid evaluation", error);
+                setTender(null);
             }
+        };
+        fetchTender();
+    }, [id]);
 
-            tender.status = "In Progress";
-
-            alert(`Tender has been successfully awarded to ${contractorName}.`);
-            
-            // Use the navigate function to redirect
-            navigate(`/tenders/${id}`);
+    const handleAwardTender = async (winnerBidId) => {
+        if (window.confirm(`Are you sure you want to award this tender? This will reject all other bids.`)) {
+            const config = {
+                headers: { Authorization: `Bearer ${token}` },
+            };
+            try {
+                await api.put(`/tenders/${id}/award`, { winnerBidId }, config);
+                alert('Tender has been successfully awarded.');
+                navigate(`/tenders/${id}`);
+            } catch (error) {
+                console.error("Failed to award tender", error);
+                alert("Error: Could not award the tender.");
+            }
         }
     };
 
-    if (!tender) return <div className="page-container"><h2>Tender not found</h2></div>;
+    if (!tender) {
+        return <div className="page-container"><h2>Loading Bids...</h2></div>;
+    }
 
     return (
         <div className="page-container">
@@ -44,8 +58,8 @@ const ViewBids = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {tender.bids.map((bid, index) => (
-                                <tr key={index}>
+                            {tender.bids.map((bid) => (
+                                <tr key={bid._id}>
                                     <td>{bid.contractorName}</td>
                                     <td>
                                         <a href="#" onClick={(e) => { e.preventDefault(); alert(`Downloading ${bid.bidDocument}...`) }}>
@@ -55,7 +69,7 @@ const ViewBids = () => {
                                     <td>
                                         <button 
                                             className="cta-button award-button"
-                                            onClick={() => handleAwardTender(bid.contractorName)}
+                                            onClick={() => handleAwardTender(bid._id)}
                                         >
                                             Award Tender
                                         </button>

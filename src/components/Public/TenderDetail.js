@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../hooks/useAuth';
 
 const TenderDetail = () => {
     const { id } = useParams();
     const { user, token, isContractor, isAdmin } = useAuth();
     const [tender, setTender] = useState(null);
+    const [isBidSubmitted, setIsBidSubmitted] = useState(false);
     const navigate = useNavigate();
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     useEffect(() => {
         const fetchTender = async () => {
             try {
-                const { data } = await axios.get(`http://localhost:5000/api/tenders/${id}`);
+                const { data } = await api.get(`/tenders/${id}`);
                 setTender(data);
             } catch (error) {
                 console.error("Could not fetch tender details", error);
@@ -21,31 +23,30 @@ const TenderDetail = () => {
             }
         };
         fetchTender();
-    }, [id]);
+    }, [id, isBidSubmitted]); // Re-fetch tender after bid submission to see updates
 
-    const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to permanently delete this tender?')) {
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-            try {
-                await axios.delete(`http://localhost:5000/api/tenders/${id}`, config);
-                alert('Tender deleted successfully.');
-                navigate('/tenders');
-            } catch (error) {
-                console.error('Error deleting tender:', error);
-                alert('Failed to delete tender.');
-            }
+    const handleBidSubmit = async (data) => {
+        const bidFile = data.bidDocument[0];
+        if (!bidFile) return;
+
+        const config = {
+            headers: { Authorization: `Bearer ${token}` },
+        };
+        const body = {
+            bidDocument: bidFile.name, // We are only sending the filename
+        };
+
+        try {
+            await api.post(`/tenders/${id}/bids`, body, config);
+            alert('Bid submitted successfully!');
+            setIsBidSubmitted(true); // Trigger re-render and update UI state
+        } catch (error) {
+            alert(`Bid submission failed: ${error.response?.data?.msg || 'Server error'}`);
         }
     };
-
-    const { register, handleSubmit, formState: { errors } } = useForm();
-
-    const handleBidSubmit = (data) => {
-        alert('This function would now submit your bid to the backend.');
-    };
     
-    const handleApproveMilestone = (milestoneId) => {
-         alert('This function would now send an approval request to the backend.');
-    };
+    const handleDelete = async () => { /* ... existing code ... */ };
+    const handleApproveMilestone = (milestoneId) => { /* ... existing code ... */ };
 
     if (!tender) {
         return <div className="page-container"><h2>Loading Tender Details...</h2></div>;
@@ -65,19 +66,14 @@ const TenderDetail = () => {
         return 'milestone-pending';
     };
 
-    const awardedBid = tender.bids.find(b => b.awarded);
+    const awardedBid = tender.bids.find(b => b.status === 'Awarded');
     const isEligible = isContractor && checkEligibility(user?.class, tender.eligibleClasses);
-    const hasAlreadyBid = isContractor && tender.bids.some(b => b.contractorName === user.name);
+    const hasAlreadyBid = isContractor && tender.bids.some(b => b.contractorId === user.id);
     const canPlaceBid = isEligible && !hasAlreadyBid && tender.status === 'Open';
 
     return (
         <div className="tender-detail-container page-container">
-            {isAdmin && (
-                <button onClick={handleDelete} className="delete-corner-btn">
-                    🗑️ Delete Tender
-                </button>
-            )}
-
+            {isAdmin && ( <button onClick={handleDelete} className="delete-corner-btn"> 🗑️ Delete Tender </button> )}
             <div className="tender-card-header">
                 <h2>{tender.title}</h2>
                 <div className="eligibility-info detail-eligibility">

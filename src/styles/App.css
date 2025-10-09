@@ -394,3 +394,8 @@ a {
 .tender-detail-container .tender-card-header {
     margin-top: 2.5rem;
 }
+
+/* --- Bid Status Colors --- */
+.status-pending { background-color: var(--warning-color); }
+.status-awarded { background-color: var(--success-color); }
+.status-rejected { background-color: #c0392b; } /* A darker red */

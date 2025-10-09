@@ -10,7 +10,13 @@ const tenderSchema = mongoose.Schema({
         contractorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         contractorName: { type: String },
         bidDocument: { type: String },
-        awarded: { type: Boolean, default: false },
+        // --- CHANGE IS HERE ---
+        // We are removing 'awarded' and adding a more flexible 'status'
+        status: { 
+            type: String, 
+            enum: ['Pending', 'Awarded', 'Rejected'],
+            default: 'Pending' 
+        },
     }],
     milestones: [{
         name: { type: String },
