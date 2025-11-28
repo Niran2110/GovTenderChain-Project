@@ -1,50 +1,86 @@
 const Tender = require('../models/Tender');
 const User = require('../models/User');
 
-// --- ADD THIS NEW FUNCTION ---
-exports.submitBid = async (req, res) => {
+// 1. Create Tender (Updated with Technical Requirements)
+exports.createTender = async (req, res) => {
     try {
-        const tender = await Tender.findById(req.params.id);
-        if (!tender) {
-            return res.status(404).json({ msg: 'Tender not found' });
-        }
-        if (tender.status !== 'Open') {
-            return res.status(400).json({ msg: 'Tender is not open for bidding' });
-        }
+        let { 
+            title, description, category, totalValue, 
+            minTurnover, minExperience, // NEW FIELDS
+            eligibleClasses, milestones, deadline 
+        } = req.body;
 
-        // Check if user has already bid
-        const hasAlreadyBid = tender.bids.some(bid => bid.contractorId.toString() === req.user.id);
-        if (hasAlreadyBid) {
-            return res.status(400).json({ msg: 'You have already submitted a bid for this tender' });
-        }
-        
-        const newBid = {
-            contractorId: req.user.id,
-            contractorName: req.user.name,
-            bidDocument: req.body.bidDocument, // We're saving the filename for this simulation
-            status: 'Pending' // Default status
+        if (typeof milestones === 'string') { try { milestones = JSON.parse(milestones); } catch (e) {} }
+        if (typeof eligibleClasses === 'string') { try { eligibleClasses = JSON.parse(eligibleClasses); } catch (e) {} }
+
+        const tenderData = {
+            title, description, category, totalValue, 
+            minTurnover, minExperience, // Save fields
+            eligibleClasses, milestones, deadline,
+            tenderDocument: req.file ? req.file.path.replace(/\\/g, "/") : null
         };
 
-        tender.bids.push(newBid);
-        await tender.save();
+        const newTender = new Tender(tenderData);
+        const tender = await newTender.save();
         res.status(201).json(tender);
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 };
 
-// --- Your other functions remain below ---
+// --- KEEP ALL OTHER FUNCTIONS EXACTLY THE SAME ---
+// (submitBid, approveMilestone, awardTender, getMyBids, deleteTender, getAllTenders, getTenderById)
+
+exports.submitBid = async (req, res) => {
+    try {
+        const tender = await Tender.findById(req.params.id);
+        if (!tender) return res.status(404).json({ msg: 'Tender not found' });
+        if (tender.status !== 'Open') return res.status(400).json({ msg: 'Tender is not open for bidding' });
+
+        const hasAlreadyBid = tender.bids.some(bid => bid.contractorId.toString() === req.user.id);
+        if (hasAlreadyBid) return res.status(400).json({ msg: 'You have already submitted a bid' });
+        
+        if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
+        if (!req.body.bidAmount) return res.status(400).json({ msg: 'Bid amount is required' });
+        
+        const newBid = {
+            contractorId: req.user.id,
+            contractorName: req.user.name,
+            bidDocument: req.file.path.replace(/\\/g, "/"),
+            bidAmount: Number(req.body.bidAmount),
+            status: 'Pending'
+        };
+
+        tender.bids.push(newBid);
+        await tender.save();
+        res.status(201).json(tender);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
+exports.approveMilestone = async (req, res) => {
+    try {
+        const tender = await Tender.findById(req.params.id);
+        if (!tender) return res.status(404).json({ msg: 'Tender not found' });
+        const milestone = tender.milestones.find(m => m._id.toString() === req.params.milestoneId);
+        if (!milestone) return res.status(404).json({ msg: 'Milestone not found' });
+
+        milestone.status = 'Approved';
+        tender.markModified('milestones'); 
+        await tender.save();
+        res.json(tender);
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+};
 
 exports.awardTender = async (req, res) => {
     try {
         const tender = await Tender.findById(req.params.id);
         const { winnerBidId } = req.body;
-
-        if (!tender) {
-            return res.status(404).json({ msg: 'Tender not found' });
-        }
+        if (!tender) return res.status(404).json({ msg: 'Tender not found' });
 
         tender.bids.forEach(bid => {
             if (bid._id.toString() === winnerBidId) {
@@ -57,9 +93,7 @@ exports.awardTender = async (req, res) => {
         tender.status = 'In Progress';
         await tender.save();
         res.json(tender);
-
     } catch (err) {
-        console.error(err.message);
         res.status(500).send('Server Error');
     }
 };
@@ -69,7 +103,6 @@ exports.getMyBids = async (req, res) => {
         const tenders = await Tender.find({ 'bids.contractorId': req.user.id });
         res.json(tenders);
     } catch (err) {
-        console.error(err.message);
         res.status(500).send('Server Error');
     }
 };
@@ -83,17 +116,6 @@ exports.deleteTender = async (req, res) => {
         } else {
             res.status(404).json({ msg: 'Tender not found' });
         }
-    } catch (err) {
-        res.status(500).send('Server Error');
-    }
-};
-
-exports.createTender = async (req, res) => {
-    const { title, description, totalValue, eligibleClasses, milestones } = req.body;
-    try {
-        const newTender = new Tender({ title, description, totalValue, eligibleClasses, milestones });
-        const tender = await newTender.save();
-        res.status(201).json(tender);
     } catch (err) {
         res.status(500).send('Server Error');
     }
@@ -117,4 +139,3 @@ exports.getTenderById = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
-

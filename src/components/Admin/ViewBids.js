@@ -42,6 +42,9 @@ const ViewBids = () => {
         return <div className="page-container"><h2>Loading Bids...</h2></div>;
     }
 
+    // This is the base URL of your backend. In production, you'd use your live Render URL.
+    const backendBaseUrl = 'http://localhost:5000';
+
     return (
         <div className="page-container">
             <h1>Bid Evaluation for Tender: "{tender.title}"</h1>
@@ -62,8 +65,12 @@ const ViewBids = () => {
                                 <tr key={bid._id}>
                                     <td>{bid.contractorName}</td>
                                     <td>
-                                        <a href="#" onClick={(e) => { e.preventDefault(); alert(`Downloading ${bid.bidDocument}...`) }}>
-                                            {bid.bidDocument}
+                                        <a 
+                                            href={`${backendBaseUrl}/${bid.bidDocument}`}
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                        >
+                                            View Document
                                         </a>
                                     </td>
                                     <td>

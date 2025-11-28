@@ -399,3 +399,65 @@ a {
 .status-pending { background-color: var(--warning-color); }
 .status-awarded { background-color: var(--success-color); }
 .status-rejected { background-color: #c0392b; } /* A darker red */
+
+/* --- Search and Filter --- */
+.search-filter-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.search-input {
+    flex: 2;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.filter-select {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--light-text);
+    font-style: italic;
+    margin-top: 2rem;
+}
+
+/* ... existing styles ... */
+
+.tender-doc-download {
+    background-color: #e8f4f8;
+    border: 1px solid #bce8f1;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.tender-doc-download h3 {
+    margin-top: 0;
+    color: #31708f;
+}
+
+.doc-link {
+    display: inline-block;
+    background-color: #31708f;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.doc-link:hover {
+    background-color: #245269;
+}
