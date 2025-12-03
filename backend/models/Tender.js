@@ -9,13 +9,17 @@ const tenderSchema = mongoose.Schema({
         enum: ['Construction', 'IT & Software', 'Electrical', 'Maintenance', 'Supply'] 
     },
     totalValue: { type: Number, required: true },
-    
-    // --- NEW TECHNICAL REQUIREMENTS ---
-    minTurnover: { type: Number, required: true }, // Minimum annual turnover required (Cr)
-    minExperience: { type: Number, required: true }, // Minimum years of experience
-    
+    minTurnover: { type: Number, required: true },
+    minExperience: { type: Number, required: true },
     eligibleClasses: [{ type: String, required: true }],
-    status: { type: String, default: 'Open' },
+    
+    // --- UPDATED STATUS ENUM ---
+    status: { 
+        type: String, 
+        default: 'Open',
+        enum: ['Open', 'In Progress', 'Completed', 'Cancelled', 'ReviewPending'] 
+    },
+
     tenderDocument: { type: String },
     deadline: { type: Date, required: true },
 

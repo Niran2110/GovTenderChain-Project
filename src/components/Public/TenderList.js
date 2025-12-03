@@ -5,10 +5,8 @@ import api from '../../api';
 const TenderList = () => {
    const [tenders, setTenders] = useState([]);
    const [filteredTenders, setFilteredTenders] = useState([]);
-   
-   // Search & Filter States
    const [searchTerm, setSearchTerm] = useState('');
-   const [filterCategory, setFilterCategory] = useState('All'); // Filter by Category
+   const [filterCategory, setFilterCategory] = useState('All');
 
    useEffect(() => {
      const fetchTenders = async () => {
@@ -23,11 +21,9 @@ const TenderList = () => {
      fetchTenders();
    }, []);
 
-   // Filter Logic
    useEffect(() => {
        const results = tenders.filter(tender => {
            const matchesSearch = tender.title.toLowerCase().includes(searchTerm.toLowerCase());
-           // Check if category matches (or if filter is 'All')
            const matchesCategory = filterCategory === 'All' || tender.category === filterCategory;
            return matchesSearch && matchesCategory;
        });
@@ -38,6 +34,7 @@ const TenderList = () => {
     if (status === 'Open') return 'status-open';
     if (status === 'In Progress') return 'status-progress';
     if (status === 'Completed') return 'status-completed';
+    if (status === 'Cancelled') return 'status-cancelled'; // Handle Cancelled
     return '';
   };
 
@@ -45,7 +42,6 @@ const TenderList = () => {
     <div className="page-container">
       <h1>All Public Tenders</h1>
 
-      {/* --- SEARCH AND FILTER SECTION --- */}
       <div className="search-filter-container">
           <input 
             type="text" 
@@ -54,7 +50,6 @@ const TenderList = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
-          
           <select 
             value={filterCategory} 
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -81,7 +76,6 @@ const TenderList = () => {
                     </span>
                 </div>
                 
-                {/* Display Category Tag */}
                 {tender.category && (
                     <div style={{marginBottom: '10px'}}>
                         <span style={{backgroundColor: '#e0e0e0', padding: '4px 8px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold', color: '#555'}}>

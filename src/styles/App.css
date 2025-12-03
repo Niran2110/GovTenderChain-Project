@@ -1,13 +1,13 @@
 :root {
-  --primary-color: #2c3e50;
-  --secondary-color: #3498db;
+  --primary-color: #2c3e50;      /* Dark Blue */
+  --secondary-color: #3498db;    /* Bright Blue */
   --light-gray: #f4f7f9;
   --medium-gray: #ecf0f1;
   --dark-text: #333;
   --light-text: #7f8c8d;
-  --success-color: #2ecc71;
-  --warning-color: #f39c12;
-  --danger-color: #e74c3c;
+  --success-color: #2ecc71;      /* Green */
+  --warning-color: #f39c12;      /* Orange */
+  --danger-color: #e74c3c;       /* Red */
   --border-radius: 8px;
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -31,6 +31,7 @@ body {
     padding: 2rem;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
+    position: relative;
 }
 
 a {
@@ -159,6 +160,13 @@ a {
 .status-open { background-color: var(--success-color); }
 .status-progress { background-color: var(--warning-color); }
 .status-completed { background-color: var(--light-text); }
+/* --- NEW CANCELLED STATUS --- */
+.status-cancelled { background-color: #7f8c8d; color: white; }
+
+/* Bid Status Colors */
+.status-pending { background-color: var(--warning-color); }
+.status-awarded { background-color: var(--success-color); }
+.status-rejected { background-color: #c0392b; }
 
 .register-link { text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--medium-gray); }
 .register-link p { margin: 0; color: var(--light-text); }
@@ -180,6 +188,7 @@ a {
 .milestone-pending { background-color: #e67e22; }
 .milestone-approved { background-color: var(--secondary-color); }
 .milestone-paid { background-color: var(--success-color); }
+.milestone-review { background-color: #9b59b6; }
 
 .approve-button {
   background-color: var(--success-color); color: white; border: none;
@@ -204,260 +213,68 @@ a {
 .success-notice { background-color: #eaf7ed; color: var(--success-color); border: 1px solid var(--success-color); }
 .form-description { font-style: italic; color: var(--light-text); text-align: center; margin-bottom: 2rem; }
 .register-form h4 { margin-top: 2rem; margin-bottom: 1rem; color: var(--primary-color); border-bottom: 1px solid var(--medium-gray); padding-bottom: 0.5rem; }
-/* src/styles/App.css */
-/* ... (all your existing styles) ... */
 
-/* --- ADD THESE NEW STYLES AT THE END --- */
+.create-tender-form fieldset { border: 1px solid var(--medium-gray); border-radius: var(--border-radius); padding: 1.5rem; margin-bottom: 2rem; }
+.create-tender-form legend { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); padding: 0 0.5rem; }
+.create-tender-form textarea { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+.multi-select { width: 100%; padding: 0.5rem; height: 100px; border: 1px solid #ccc; border-radius: 5px; }
+.milestone-fields { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+.milestone-fields input { flex: 1; }
+.add-btn, .remove-btn { padding: 0.5rem 1rem; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; }
+.add-btn { background-color: var(--secondary-color); color: white; }
+.remove-btn { background-color: var(--danger-color); color: white; }
 
-/* ------------------- */
-/* Enhanced Register Form */
-/* ------------------- */
-.register-form {
-  max-width: 650px; /* Make the form wider */
-}
+.admin-actions { background-color: var(--light-gray); padding: 1.5rem; margin: 2rem 0; border-radius: var(--border-radius); border: 1px solid var(--medium-gray); text-align: center; display: flex; justify-content: center; align-items: center; gap: 20px; }
+.bids-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+.bids-table th, .bids-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+.bids-table th { background-color: var(--primary-color); color: white; font-size: 1.1rem; }
+.bids-table tr:nth-child(even) { background-color: var(--light-gray); }
+.bids-table tr:hover { background-color: #e2e2e2; }
+.bids-table a { font-weight: bold; text-decoration: underline; }
+.award-button { background-color: var(--success-color); font-size: 0.9rem; padding: 0.7rem 1rem; }
+.award-button:hover { background-color: #27ae60; }
 
-.register-form fieldset {
-  border: 1px solid var(--medium-gray);
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
+.delete-corner-btn { position: absolute; top: 1.5rem; right: 1.5rem; background-color: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); padding: 0.5rem 1rem; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: background-color 0.2s, color 0.2s; }
+.delete-corner-btn:hover { background-color: var(--danger-color); color: white; }
+.tender-detail-container .tender-card-header { margin-top: 2.5rem; }
 
-.register-form legend {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  padding: 0 0.5rem;
-}
+.tender-doc-download { background-color: #e8f4f8; border: 1px solid #bce8f1; padding: 20px; border-radius: 5px; margin: 20px 0; }
+.tender-doc-download h3 { margin-top: 0; color: #31708f; }
+.doc-link { display: inline-block; background-color: #31708f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+.doc-link:hover { background-color: #245269; }
 
-.register-form .form-group input[type="file"] {
-    padding: 0;
-    border: none;
-}
-/* src/styles/App.css */
-/* ... (all your existing styles) ... */
+.search-filter-container { display: flex; gap: 15px; margin-bottom: 30px; }
+.search-input { flex: 2; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; }
+.filter-select { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; background-color: white; cursor: pointer; }
+.no-results { text-align: center; color: var(--light-text); font-style: italic; margin-top: 2rem; }
 
-/* --- ADD THESE NEW STYLES AT THE END --- */
-/* ------------------- */
-/* Admin Actions & Bid Evaluation */
-/* ------------------- */
 
-.admin-actions {
-    background-color: var(--light-gray);
-    padding: 1.5rem;
-    margin: 2rem 0;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--medium-gray);
-    text-align: center;
-}
-
-.bids-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 2rem;
-}
-
-.bids-table th, .bids-table td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-}
-
-.bids-table th {
-    background-color: var(--primary-color);
-    color: white;
-    font-size: 1.1rem;
-}
-
-.bids-table tr:nth-child(even) {
-    background-color: var(--light-gray);
-}
-
-.bids-table tr:hover {
-    background-color: #e2e2e2;
-}
-
-.bids-table a {
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-.award-button {
-    background-color: var(--success-color);
-    font-size: 0.9rem;
-    padding: 0.7rem 1rem;
-}
-
-.award-button:hover {
-    background-color: #27ae60;
-}
-
-/* --- Create Tender Form --- */
-.create-tender-form fieldset {
-  border: 1px solid var(--medium-gray);
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-.create-tender-form legend {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  padding: 0 0.5rem;
-}
-.create-tender-form textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-family: inherit;
-    font-size: 1rem;
-}
-.multi-select {
-    width: 100%;
-    padding: 0.5rem;
-    height: 100px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-.milestone-fields {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: center;
-}
-.milestone-fields input {
-    flex: 1;
-}
-.add-btn, .remove-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-}
-.add-btn {
-    background-color: var(--secondary-color);
-    color: white;
-}
-.remove-btn {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-/* ... all existing styles ... */
-
-/* --- Admin Actions Box --- */
-.admin-actions {
-    background-color: var(--light-gray);
-    padding: 1.5rem;
-    margin: 2rem 0;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--medium-gray);
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-}
-
-/* --- Add these new styles at the end --- */
-
-/* Make the page container a positioning context */
-.page-container {
-    position: relative;
-}
-
-/* New corner delete button style */
-.delete-corner-btn {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background-color: transparent;
-    border: 1px solid var(--danger-color);
-    color: var(--danger-color);
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.delete-corner-btn:hover {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-/* --- Fix for Overlapping Delete Button --- */
-.tender-detail-container .tender-card-header {
-    margin-top: 2.5rem;
-}
-
-/* --- Bid Status Colors --- */
-.status-pending { background-color: var(--warning-color); }
-.status-awarded { background-color: var(--success-color); }
-.status-rejected { background-color: #c0392b; } /* A darker red */
-
-/* --- Search and Filter --- */
-.search-filter-container {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.search-input {
-    flex: 2;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-.filter-select {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    background-color: white;
-    cursor: pointer;
-}
-
-.no-results {
-    text-align: center;
-    color: var(--light-text);
-    font-style: italic;
-    margin-top: 2rem;
-}
 
 /* ... existing styles ... */
 
-.tender-doc-download {
-    background-color: #e8f4f8;
-    border: 1px solid #bce8f1;
-    padding: 20px;
-    border-radius: 5px;
-    margin: 20px 0;
-}
-
-.tender-doc-download h3 {
-    margin-top: 0;
-    color: #31708f;
-}
-
-.doc-link {
-    display: inline-block;
-    background-color: #31708f;
+.status-review-pending {
+    background-color: #e67e22; /* Orange */
     color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    margin-top: 10px;
 }
 
-.doc-link:hover {
-    background-color: #245269;
+.review-pending-box {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.extension-controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.extension-controls input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }

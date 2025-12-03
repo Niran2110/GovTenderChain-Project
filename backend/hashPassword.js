@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 
 // Change the password to the contractor's password
-const plainPassword = 'contractorpassword';
+const plainPassword = '12345678';
 const salt = bcrypt.genSaltSync(10);
 const hashedPassword = bcrypt.hashSync(plainPassword, salt);
 
